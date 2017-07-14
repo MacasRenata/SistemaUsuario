@@ -1,0 +1,157 @@
+<?php    
+    /**
+     * Classe para manipulação do banco de dados MySQL
+     * Aqui você faz a conexão ao banco de dados e pode 
+     * fazer suas consultas e funções adicionais que podem
+     * ser vistas abaixo
+     */
+    class DB{
+
+        //declarando as variáveis usadas na classe DB
+
+        private $conn;
+        private $result;
+        
+        /**
+         * REABRE a conexão ao banco de dados
+         *
+         */
+        /*
+        public function __construct(){
+            if(!$this->conn= mysql_connect('mysql.spartafutebol.com.br','spartafutebol','inventa82')){
+                throw new Exception('Erro ao conectar a base de dados');
+            }
+            if(!mysql_select_db('spartafutebol',$this->conn)){
+                throw new Exception('Erro ao selecionar a base de dados para uso');
+            }
+        }*/
+
+        //Essa função constroi a classe aonde for necessário. e é usada da seguinte maneira
+        //$db = new DB();
+        //$variavel = new NomeDaClasse();
+
+        public function __construct(){
+            
+            //variável conn recebe a função de conexão com o banco mysql_connect('endereço de coneção mysql','usuario','senha');
+
+            if(!$this->conn= mysql_connect('mysql.joycesantos.com.br','joycesantos','inventa82')){
+                throw new Exception('Erro ao conectar a base de dados');
+            }
+
+            //aqui é selecionada o banco de dados com a função mysql_select_db('nome do bd','função de conexão')
+
+            if(!mysql_select_db('joycesantos',$this->conn)){
+                throw new Exception('Erro ao selecionar a base de dados para uso');
+            }
+        }
+        
+        /**
+         * Retorna esta conexão ao banco de dados
+         *
+         * @return resource
+         */
+        public function Conn(){
+            return $this->conn;
+        }
+        
+        /**
+         * Fecha a conexão ao mysql
+         *
+         * @return bool
+         */
+        public function Close(){
+            return mysql_close($this->conn);
+        }
+        
+        /**
+         * Inicia uma transação de banco de dados
+         *
+         */
+        public function StartTransaction(){
+            if(!mysql_query('START TRANSACTION',$this->Conn())){
+                throw new Exception('Erro ao iniciar a transação');
+            }
+        }
+        
+        /**
+         * Executa o ROLLBACK na transação atual
+         *
+         */
+        public function Rollback(){
+            if(!mysql_query('ROLLBACK',$this->Conn())){
+                throw new Exception('Erro ao executar o cancelamento da transação');
+            }
+        }
+        
+        /**
+         * Executa o COMMIT da transação atual
+         *
+         */
+        public function Commit(){
+            if(!mysql_query('COMMIT',$this->Conn())){
+                throw new Exception('Erro ao salvar os dados da transação');
+            }
+        }
+        
+        /**
+         * Executa um comando SQL no banco de dados pode ser qualquer comando de SQL (select, include, alter, update e etc.)
+         *
+         * @param string $query
+         * @return resource
+         * a variável $query deve conter o comando SQL que quer fazer
+         * ex: $query = "SELECT * FROM tabela WHERE id='1'";
+         */
+        public function Sql($query){
+
+            //a função recebe a variável com o comando SQL e tenta executar o comando
+
+            if(!$this->result = mysql_query($query,$this->Conn())){
+
+                //se o comando tiver errado ele vai retornar falso
+                
+                return false;
+            }else{
+
+                //se o comando funcionar ele retornar o resultado pra variável result
+
+                return $this->result;
+            }
+        }
+        
+        /**
+         * Retorna uma linha de resultado por chamada
+         *
+         * @return object
+         */
+        public function Fetch(){
+            return mysql_fetch_object($this->result);
+        }
+        
+        /**
+         * Retorna o número de linhas retornadas pela consulta SQL ou número de linhas modificadas por comandos como UPDATE e DELETE
+         *
+         * @return int
+         */
+        public function NumRows(){
+            return mysql_num_rows($this->result);
+        }
+        
+        /**
+         * Retorna a mensagem de erro do mysql
+         *
+         * @return string
+         */
+        public function Error(){
+            return mysql_error($this->Conn());
+        }
+        
+        /**
+         * Retorna o último autoincrement gerado
+         *
+         * @return int
+         */
+        public function LastInsertId(){
+            return mysql_insert_id($this->conn);
+        }
+    }
+?>
